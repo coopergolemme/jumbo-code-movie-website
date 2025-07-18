@@ -1,0 +1,19 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+const posterImageUrl = "https://image.tmdb.org/t/p/w500/";
+const providerLogoUrl = "https://image.tmdb.org/t/p/w500/";
+const backdropImageUrl = "https://image.tmdb.org/t/p/original/";
+
+export function getMovieImageUrl(path: string, poster = true): string {
+  return path
+    ? `${poster ? posterImageUrl : backdropImageUrl}${path}`
+    : "/placeholder.svg";
+}
+
+export function getProviderLogo(path: string): string {
+  return path ? `${providerLogoUrl}${path}` : "/placeholder.svg";
+}
