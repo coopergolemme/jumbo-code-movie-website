@@ -23,7 +23,7 @@ const options = {
   headers: {
     accept: "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYjFhMjQ4ZDU3MGM4YjMxMTM0YWZjODUzZTI0MTY4YiIsIm5iZiI6MTcwMTU1MjcwNy4wMDEsInN1YiI6IjY1NmJhMjQyNGE0YmY2MDEzZDhkZjAzOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PrYgQsAWehjkH0GhLbQDiXA3w7utyY5DIqTQV_LctGY",
+      "Bearer ${process.env.TMDB_API}",
   },
 };
 
