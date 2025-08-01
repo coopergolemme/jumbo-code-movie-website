@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { getMovieList } from "@/lib/movie-api";
-import { supabase } from "@/lib/supabase";
 import { MovieCard } from "@/components/movie-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,36 +14,22 @@ export default function MoviesPage() {
   const [watchedMovies, setWatchedMovies] = useState<WatchedMovie[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const [movieType, setMovieType] = useState<
     "new" | "popular" | "highly-rated"
   >("new");
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-  }, []);
 
   useEffect(() => {
     loadMovies();
   }, [currentPage, movieType]);
 
   useEffect(() => {
-    if (user) {
-      loadWatchedMovies();
-    }
-  }, [user]);
+    loadWatchedMovies();
+  }, []);
 
   const loadMovies = async () => {
     setLoading(true);
     try {
       const movieData = await getMovieList(currentPage, movieType);
-      console.log("Loaded movies:", movieData);
       setMovies(movieData);
     } catch (error) {
       console.error("Error loading movies:", error);
@@ -54,15 +39,10 @@ export default function MoviesPage() {
   };
 
   const loadWatchedMovies = async () => {
-    if (!user) return;
-
     try {
-      const data = await getUserWatchedMovies(user.id);
-
+      const data = await getUserWatchedMovies();
       setWatchedMovies(data || []);
-    } catch (error) {
-      console.error("Error loading watched movies:", error);
-    }
+    } catch (error) {}
   };
 
   const isMovieWatched = (movieId: number) => {

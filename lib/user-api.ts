@@ -7,13 +7,9 @@ export interface User {
 }
 
 // Get user's streaming providers
-export async function getUserStreamingProviders(
-  userId: string,
-): Promise<string[]> {
+export async function getUserStreamingProviders(): Promise<string[]> {
   try {
-    const response = await fetch(
-      `/api/user/streaming-providers?userId=${userId}`,
-    );
+    const response = await fetch("/api/user/streaming-providers");
 
     if (!response.ok) {
       throw new Error("Failed to fetch streaming providers");
@@ -29,8 +25,7 @@ export async function getUserStreamingProviders(
 
 // Update user's streaming providers
 export async function updateUserStreamingProviders(
-  userId: string,
-  providers: string[],
+  providers: string[]
 ): Promise<boolean> {
   try {
     const response = await fetch("/api/user/streaming-providers", {
@@ -39,7 +34,6 @@ export async function updateUserStreamingProviders(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId,
         streaming_providers: providers,
       }),
     });
@@ -52,9 +46,15 @@ export async function updateUserStreamingProviders(
 }
 
 // Get complete user profile
-export async function getUserProfile(userId: string): Promise<User | null> {
+export async function getUserProfile(
+  sessionToken: string
+): Promise<User | null> {
   try {
-    const response = await fetch(`/api/user/profile?userId=${userId}`);
+    const response = await fetch("/api/user/profile", {
+      headers: {
+        Authorization: `Bearer ${sessionToken}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error("Failed to fetch user profile");
@@ -86,52 +86,9 @@ export async function upsertUserProfile(user: Partial<User>): Promise<boolean> {
   }
 }
 
-export async function getCurrentUserId(): Promise<string | null> {
+export async function getUserWatchedMovies(): Promise<any[]> {
   try {
-    // Check if we're in a browser environment
-    if (typeof window === "undefined") {
-      console.warn("getCurrentUserId called on server side");
-      return null;
-    }
-
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
-
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-    console.log("Current user data:", user, error);
-    if (error || !user) {
-      return null;
-    }
-    return user.id;
-  } catch (error) {
-    console.error("Error getting current user ID:", error);
-    return null;
-  }
-}
-
-// Get current authenticated user (still client-side for auth state)
-export async function getCurrentUser(): Promise<User | null> {
-  try {
-    const userId = await getCurrentUserId();
-    if (!userId) {
-      return null;
-    }
-    return await getUserProfile(userId);
-  } catch (error) {
-    console.error("Error getting current user:", error);
-    return null;
-  }
-}
-
-export async function getUserWatchedMovies(userId: string): Promise<any[]> {
-  try {
-    const response = await fetch(`/api/user/watched-movies?userId=${userId}`);
+    const response = await fetch("/api/user/watched-movies");
 
     if (!response.ok) {
       throw new Error("Failed to fetch watched movies");
@@ -146,13 +103,10 @@ export async function getUserWatchedMovies(userId: string): Promise<any[]> {
 }
 
 export async function getUserMovieReview(
-  userId: string,
-  movieId: number,
+  movieId: number
 ): Promise<UserMovieReview | null> {
   try {
-    const response = await fetch(
-      `/api/user/movie-review?userId=${userId}&movieId=${movieId}`,
-    );
+    const response = await fetch(`/api/user/movie-review?movieId=${movieId}`);
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -174,12 +128,11 @@ export async function getUserMovieReview(
 }
 
 export async function addWatchedMovie(
-  userId: string,
   movieId: number,
   title?: string,
   posterPath?: string,
   rating?: number,
-  review?: string,
+  review?: string
 ): Promise<boolean> {
   try {
     const response = await fetch("/api/user/watched-movies", {
@@ -188,7 +141,6 @@ export async function addWatchedMovie(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId,
         movieId,
         title,
         posterPath,
@@ -205,12 +157,11 @@ export async function addWatchedMovie(
 }
 
 export async function updateWatchedMovie(
-  userId: string,
   movieId: number,
   title?: string,
   posterPath?: string,
   rating?: number,
-  review?: string,
+  review?: string
 ): Promise<boolean> {
   try {
     const response = await fetch("/api/user/watched-movies", {
@@ -219,7 +170,6 @@ export async function updateWatchedMovie(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId,
         movieId,
         title,
         posterPath,

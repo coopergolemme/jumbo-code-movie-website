@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Film, Star, Users, TrendingUp } from "lucide-react";
 import Link from "next/link";
@@ -16,7 +16,7 @@ export default function HomePage() {
     const getUser = async () => {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await getSupabaseClient().auth.getUser();
       setUser(user);
       setLoading(false);
     };
@@ -25,7 +25,7 @@ export default function HomePage() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = getSupabaseClient().auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         router.push("/movies");
@@ -56,7 +56,7 @@ export default function HomePage() {
           <h1 className="text-6xl font-bold">JumboBoxd</h1>
         </div>
         <p className="text-xl mb-8">Track and rate your favorite movies</p>
-        <Link href="/auth">
+        <Link href="/login">
           <Button
             size="lg"
             className="bg-white text-purple-600 hover:bg-gray-100">

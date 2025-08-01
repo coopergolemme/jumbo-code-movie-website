@@ -13,7 +13,6 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
-  getCurrentUser,
   getUserStreamingProviders,
   updateUserStreamingProviders,
 } from "@/lib/user-api";
@@ -31,15 +30,10 @@ export default function StreamingProviders() {
 
   useEffect(() => {
     const initializeUser = async () => {
-      const currentUser = await getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
-
-        const providers = await getUserStreamingProviders(currentUser.id);
-        setUserStreamingProviders(providers);
-        setSelectedProviders(providers);
-        setUserLoading(false);
-      }
+      const providers = await getUserStreamingProviders();
+      setUserStreamingProviders(providers);
+      setSelectedProviders(providers);
+      setUserLoading(false);
     };
 
     initializeUser();
@@ -58,7 +52,7 @@ export default function StreamingProviders() {
   const saveProvidersToDatabase = async (providers: string[]) => {
     if (!user) return false;
 
-    const success = await updateUserStreamingProviders(user.id, providers);
+    const success = await updateUserStreamingProviders(providers);
     if (success) {
       setUserStreamingProviders(providers);
       return true;

@@ -34,9 +34,8 @@ export default function ClientInteractiveSection({
   const [review, setReview] = useState("");
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
-  const [userId, setUserId] = useState<string | null>(null);
   const [existingReview, setExistingReview] = useState<UserMovieReview | null>(
-    null,
+    null
   );
   const [isLoading, setIsLoading] = useState(true);
 
@@ -44,27 +43,16 @@ export default function ClientInteractiveSection({
   useEffect(() => {
     const fetchUserData = async () => {
       setIsLoading(true);
-      try {
-        const id = await getCurrentUserId();
-        setUserId(id);
+      const reviewData = await getUserMovieReview(movie.id);
+      setExistingReview(reviewData);
 
-        if (id) {
-          const reviewData = await getUserMovieReview(id, movie.id);
-          setExistingReview(reviewData);
-
-          if (reviewData?.isWatched) {
-            setIsWatched(true);
-            setRating(reviewData.rating || 0);
-            setReview(reviewData.review || "");
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setIsLoading(false);
+      if (reviewData?.isWatched) {
+        setIsWatched(true);
+        setRating(reviewData.rating || 0);
+        setReview(reviewData.review || "");
       }
+      setIsLoading(false);
     };
-
     fetchUserData();
   }, [movie.id]);
 
@@ -73,23 +61,17 @@ export default function ClientInteractiveSection({
       setShowConfirmDialog(true);
     } else {
       setIsWatched(true);
-      console.log("Movie watched status:", true, "for movieId:", movie.id);
     }
   };
 
   const confirmUnwatch = () => {
     setIsWatched(false);
     setShowConfirmDialog(false);
-    console.log("Movie watched status:", false, "for movieId:", movie.id);
   };
 
   const handleReviewSubmit = async () => {
     if (review.trim() === "" && rating === 0) {
       console.warn("Cannot submit empty review or zero rating");
-      return;
-    }
-    if (!userId) {
-      console.error("User ID is required to submit a review");
       return;
     }
 
@@ -99,22 +81,20 @@ export default function ClientInteractiveSection({
       if (existingReview?.isWatched) {
         // Update existing review
         success = await updateWatchedMovie(
-          userId,
           movie.id,
           movie.title,
           movie.poster_path,
           rating,
-          review,
+          review
         );
       } else {
         // Add new review
         success = await addWatchedMovie(
-          userId,
           movie.id,
           movie.title,
           movie.poster_path,
           rating,
-          review,
+          review
         );
       }
 
@@ -166,8 +146,7 @@ export default function ClientInteractiveSection({
               ? "bg-green-600 hover:bg-green-700 text-white border-green-600"
               : "border-gray-300 hover:border-green-600 hover:text-green-600"
           }`}
-          onClick={handleWatchedToggle}
-        >
+          onClick={handleWatchedToggle}>
           {isWatched ? (
             <div className="flex items-center gap-2">
               <span className="text-lg">✓</span>
@@ -227,7 +206,9 @@ export default function ClientInteractiveSection({
         </div>
       )}
 
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+      <Dialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Action</DialogTitle>
@@ -238,18 +219,21 @@ export default function ClientInteractiveSection({
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setShowConfirmDialog(false)}
-            >
+              onClick={() => setShowConfirmDialog(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={confirmUnwatch}>
+            <Button
+              variant="destructive"
+              onClick={confirmUnwatch}>
               Confirm
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+      <Dialog
+        open={showReviewDialog}
+        onOpenChange={setShowReviewDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -293,13 +277,14 @@ export default function ClientInteractiveSection({
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={handleReviewCancel}>
+            <Button
+              variant="outline"
+              onClick={handleReviewCancel}>
               Cancel
             </Button>
             <Button
               onClick={handleReviewSubmit}
-              disabled={rating === 0 && !review.trim()}
-            >
+              disabled={rating === 0 && !review.trim()}>
               Submit Review
             </Button>
           </DialogFooter>

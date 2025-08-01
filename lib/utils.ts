@@ -17,3 +17,20 @@ export function getMovieImageUrl(path: string, poster = true): string {
 export function getProviderLogo(path: string): string {
   return path ? `${providerLogoUrl}${path}` : "/placeholder.svg";
 }
+
+export function getSessionFromBrowser(): string | null {
+  
+  console.log(document.cookie);
+
+  const cookies = document.cookie.split("; ");
+  const sessionCookie = cookies.find((cookie) => cookie.startsWith("session"));
+  console.log("Session cookie found:", sessionCookie);
+  console.log(cookies);
+
+  if (!sessionCookie) {
+    console.warn("Session cookie not found");
+    return null;
+  }
+
+  return sessionCookie.split("=")[1];
+}

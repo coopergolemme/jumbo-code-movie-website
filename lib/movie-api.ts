@@ -23,7 +23,7 @@ const options = {
   headers: {
     accept: "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5NTRiZDE2NTAyYWMxYmE5NDdiYzBjY2JjMWM4MTkyYyIsIm5iZiI6MTcwMTU1MjcwNy4wMDEsInN1YiI6IjY1NmJhMjQyNGE0YmY2MDEzZDhkZjAzOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.cEZ8N_BodXitOfX9rZPGLGlvTdNccKTGW8SHomzmQYo",
+      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYjFhMjQ4ZDU3MGM4YjMxMTM0YWZjODUzZTI0MTY4YiIsIm5iZiI6MTcwMTU1MjcwNy4wMDEsInN1YiI6IjY1NmJhMjQyNGE0YmY2MDEzZDhkZjAzOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PrYgQsAWehjkH0GhLbQDiXA3w7utyY5DIqTQV_LctGY",
   },
 };
 
@@ -32,10 +32,6 @@ export async function getMovie(id: number): Promise<Movie | null> {
     const response = await fetch(
       movieUrl.replace("movie_id", id.toString()),
       options
-    );
-    console.log(
-      "Fetching movie from:",
-      movieUrl.replace("movie_id", id.toString())
     );
     if (!response.ok) return null;
     return await response.json();
@@ -54,10 +50,7 @@ export async function getDetailedMovie(
         "?append_to_response=videos",
       options
     );
-    console.log(
-      "Fetching detailed movie from:",
-      movieUrl.replace("movie_id", id.toString()) + "?append_to_response=videos"
-    );
+
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
@@ -86,7 +79,7 @@ export async function getMovieList(
 
   try {
     const response = await fetch(url + `&page=${page}`, options);
-    console.log("Fetching movie list from:", url + `&page=${page}`);
+
     if (!response.ok) return [];
 
     return response.json().then((data) => data.results || []);
@@ -104,10 +97,7 @@ export async function getMovieReviews(
       reviewUrl.replace("movie_id", id.toString()),
       options
     );
-    console.log(
-      "Fetching movie reviews from:",
-      reviewUrl.replace("movie_id", id.toString())
-    );
+
     if (!response.ok) return [];
     const data = await response.json();
     return data.results.map((review: any) => ({
@@ -127,10 +117,7 @@ export async function getSimilarMovies(id: number): Promise<Movie[]> {
       similarUrl.replace("{movie_id}", id.toString()),
       options
     );
-    console.log(
-      "Fetching similar movies from:",
-      similarUrl.replace("{movie_id}", id.toString())
-    );
+
     if (!response.ok) return [];
     const data = await response.json();
 
@@ -147,10 +134,7 @@ export async function getWatchProviders(id: number): Promise<Provider[] | {}> {
       providersUrl.replace("{movie_id}", id.toString()),
       options
     );
-    console.log(
-      "Fetching watch providers from:",
-      providersUrl.replace("{movie_id}", id.toString())
-    );
+
     if (!response.ok) return {};
     const data = await response.json();
     console.log("Watch providers data:", data);
@@ -175,10 +159,10 @@ export async function getWatchProviders(id: number): Promise<Provider[] | {}> {
 export async function getAllWatchProviders(): Promise<Provider[] | null> {
   try {
     const response = await fetch(allProvidersUrl, options);
-    console.log("Fetching all watch providers from:", allProvidersUrl);
+    s
     if (!response.ok) return null;
     const data = await response.json();
-    console.log("All watch providers data:", data);
+    
     const sortedProviders = data.results.sort(
       (a: any, b: any) => a.display_priority - b.display_priority
     );

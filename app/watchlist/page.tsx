@@ -1,7 +1,5 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import { MovieCard } from "@/components/movie-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -18,30 +16,15 @@ import { getUserWatchedMovies } from "@/lib/user-api";
 export default function WatchlistPage() {
   const [watchedMovies, setWatchedMovies] = useState<WatchedMovie[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
+    loadWatchedMovies();
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      loadWatchedMovies();
-    }
-  }, [user]);
-
   const loadWatchedMovies = async () => {
-    if (!user) return;
-
     setLoading(true);
     try {
-      const data = await getUserWatchedMovies(user.id);
+      const data = await getUserWatchedMovies();
 
       setWatchedMovies(data || []);
     } catch (error) {

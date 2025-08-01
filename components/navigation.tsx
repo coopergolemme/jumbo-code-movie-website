@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -42,8 +42,36 @@ export function Navigation() {
     return () => subscription.unsubscribe();
   }, []);
 
+  //   async function fetchSessionUser() {
+  //     try {
+  //       const res = await fetch("/api/auth/session", {
+  //         credentials: "include",
+  //       });
+  //       if (res.ok) {
+  //         const data = await res.json();
+  //         console.log("Session user:", data.user); // Debug log
+  //         setUser(data.user || null);
+  //       } else {
+  //         setUser(null);
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching session user:", err);
+  //       setUser(null);
+  //     }
+  //   }
+  //   fetchSessionUser();
+  // }, [user]);
+
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    // signout of supabase
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+      return;
+    }
+
+    await fetch("/api/auth/signout", { method: "POST" });
+    setUser(null);
     router.push("/");
   };
 
@@ -157,7 +185,7 @@ export function Navigation() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link href="/auth">
+            <Link href="/login">
               <Button className="bg-purple-600 hover:bg-purple-700 text-white">
                 Sign In
               </Button>
