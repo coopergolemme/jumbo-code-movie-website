@@ -23,7 +23,7 @@ const options = {
   headers: {
     accept: "application/json",
     Authorization:
-      "Bearer ${process.env.TMDB_API}",
+      `Bearer ${process.env.TMDB_API}`,
   },
 };
 
